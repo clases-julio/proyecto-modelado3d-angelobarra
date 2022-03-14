@@ -3,9 +3,10 @@ import bpy
 '''*********************************************************************'''
 '''Funciones comunes útiles para selección/activación/borrado de objetos'''
 '''*********************************************************************'''
-def seleccionarObjeto(nombreObjeto): # Seleccionar un objeto por su nombre
+def seleccionarObjetos(nombreObjetos): # Seleccionar un objeto por su nombre
     bpy.ops.object.select_all(action='DESELECT') # deseleccionamos todos...
-    bpy.data.objects[nombreObjeto].select = True # ...excepto el buscado
+    for nombreObjeto in nombreObjetos:
+        bpy.data.objects[nombreObjeto].select_set(True) # ...excepto el buscado
 
 def activarObjeto(nombreObjeto): # Activar un objeto por su nombre
     bpy.context.scene.objects.active = bpy.data.objects[nombreObjeto]
@@ -19,6 +20,12 @@ def borrarObjetos(): # Borrar todos los objetos
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=False)
 
+def borrarObjetosExcepto(objetos):
+    if(len(bpy.data.objects) != 0):
+        bpy.ops.object.select_all(action='SELECT')
+        for obj in objetos:
+            bpy.data.objects[obj].select_set(False)
+        bpy.ops.object.delete(use_global=False)
 '''****************************************************************'''
 '''Clase para realizar transformaciones sobre objetos seleccionados'''
 '''****************************************************************'''
@@ -88,30 +95,36 @@ class Objeto:
         bpy.ops.mesh.primitive_cylinder_add(radius=0.5, depth=1, location=(0, 0, 0))
         Activo.renombrar(objName)
 
+def crearRueda(x, y, nombre):
+    Objeto.crearCilindro(nombre)
+    Seleccionado.escalar((0.5, 0.5, 0.05))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, y, 0))
+    
+    Objeto.crearCilindro('PerimetroRueda1')
+    Seleccionado.escalar((0.6, 0.6, 0.05))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, y+0.05, 0))
+    
+    Objeto.crearCilindro('PerimetroRueda2')
+    Seleccionado.escalar((0.6, 0.6, 0.05))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, y-0.05, 0))
+    
+    seleccionarObjetos(['PerimetroRueda1', 'PerimetroRueda2', nombre])
+    bpy.ops.object.join()
+    
 '''************'''
 ''' M  A  I  N '''
 '''************'''
 if __name__ == "__main__":
-    borrarObjetos()
+    
+    borrarObjetosExcepto(['Camera', 'Light'])
     Objeto.crearCilindro('Eje')
     Seleccionado.rotarX(3.1415/2)
     Seleccionado.escalar((0.15, 1, 0.15))
     
-    Objeto.crearCilindro('CentroRueda')
-    Seleccionado.escalar((0.5, 0.5, 0.05))
-    Seleccionado.rotarX(3.1415/2)
-    Seleccionado.mover((0, 0.45, 0))
-    
-    
-    Objeto.crearCilindro('PerimetroRueda')
-    Seleccionado.escalar((0.6, 0.6, 0.05))
-    Seleccionado.rotarX(3.1415/2)
-    Seleccionado.mover((0, 0.50, 0))
-    
-    Objeto.crearCilindro('PerimetroRueda')
-    Seleccionado.escalar((0.6, 0.6, 0.05))
-    Seleccionado.rotarX(3.1415/2)
-    Seleccionado.mover((0, 0.40, 0))
+    crearRueda(0, 0.45, 'Rueda 1')
     
     
     '''
