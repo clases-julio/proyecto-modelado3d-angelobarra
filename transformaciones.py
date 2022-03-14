@@ -45,6 +45,12 @@ class Seleccionado:
 
     def rotarZ(v):
         bpy.ops.transform.rotate(value=v, orient_axis='Z')
+    
+    def cambiarColor(R, G, B):
+        activeObject = bpy.context.active_object
+        mat = bpy.data.materials.new("")
+        activeObject.data.materials.append(mat)
+        bpy.context.object.active_material.diffuse_color = (R, G, B, 1)
 
 '''**********************************************************'''
 '''Clase para realizar transformaciones sobre objetos activos'''
@@ -92,27 +98,59 @@ class Objeto:
         Activo.renombrar(objName)
     
     def crearCilindro(objName):
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.5, depth=1, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_cylinder_add(radius=1, depth=1, location=(0, 0, 0))
         Activo.renombrar(objName)
 
-def crearRueda(x, y, nombre):
-    Objeto.crearCilindro(nombre)
-    Seleccionado.escalar((0.5, 0.5, 0.05))
-    Seleccionado.rotarX(3.1415/2)
-    Seleccionado.mover((0, y, 0))
+RADIO_EXT_RUEDA = 0.5
+ANCHO_RUEDA = 0.05
+RADIO_INT_RUEDA = RADIO_EXT_RUEDA - ANCHO_RUEDA
+RADIO_EJE = 0.1
+LARGO_EJE = 2
+DISTANCIA_ENTRE_EJES = 2
+POS_EXT_RUEDA = LARGO_EJE / 2 + ANCHO_RUEDA
+
+def crearRueda(x, y, nombre, color):
+    
+    r, g, b = color
+    
     
     Objeto.crearCilindro('PerimetroRueda1')
-    Seleccionado.escalar((0.6, 0.6, 0.05))
+    Seleccionado.escalar((RADIO_EXT_RUEDA, RADIO_EXT_RUEDA, ANCHO_RUEDA))
     Seleccionado.rotarX(3.1415/2)
-    Seleccionado.mover((0, y+0.05, 0))
+    Seleccionado.mover((0, y + ANCHO_RUEDA, 0))
+    Seleccionado.cambiarColor(r, g, b)
     
     Objeto.crearCilindro('PerimetroRueda2')
-    Seleccionado.escalar((0.6, 0.6, 0.05))
+    Seleccionado.escalar((RADIO_EXT_RUEDA, RADIO_EXT_RUEDA, ANCHO_RUEDA))
     Seleccionado.rotarX(3.1415/2)
-    Seleccionado.mover((0, y-0.05, 0))
+    Seleccionado.mover((0, y - ANCHO_RUEDA, 0))
+    Seleccionado.cambiarColor(r, g, b)
     
-    seleccionarObjetos(['PerimetroRueda1', 'PerimetroRueda2', nombre])
+    Objeto.crearCilindro('CentroRueda')
+    Seleccionado.escalar((RADIO_INT_RUEDA, RADIO_INT_RUEDA, ANCHO_RUEDA))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, y, 0))
+    Seleccionado.cambiarColor(b, g, r)
+    
+    seleccionarObjetos(['PerimetroRueda1', 'PerimetroRueda2', 'CentroRueda'])
     bpy.ops.object.join()
+    Activo.renombrar(nombre)
+    
+    
+def crearEje(x, y, nombre):
+    Objeto.crearCilindro('Eje')
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.escalar((RADIO_EJE, LARGO_EJE, RADIO_EJE))
+    Seleccionado.cambiarColor(0, 10, 0)
+    crearRueda(0, POS_EXT_RUEDA, 'Rueda 1', (0, 0, 10))
+    crearRueda(0, -POS_EXT_RUEDA, 'Rueda 2',  (0, 0, 10))
+    
+    Objeto.crearEsfera('Centro')
+    Seleccionado.escalar((RADIO_EJE*4, RADIO_EJE*4, RADIO_EJE*4))
+    seleccionarObjetos(['Eje', 'Rueda 1', 'Rueda 2', 'Centro'])
+    bpy.ops.object.join()
+    Activo.renombrar(nombre)
+    Activo.posicionar((x, y, 0))
     
 '''************'''
 ''' M  A  I  N '''
@@ -120,12 +158,8 @@ def crearRueda(x, y, nombre):
 if __name__ == "__main__":
     
     borrarObjetosExcepto(['Camera', 'Light'])
-    Objeto.crearCilindro('Eje')
-    Seleccionado.rotarX(3.1415/2)
-    Seleccionado.escalar((0.15, 1, 0.15))
-    
-    crearRueda(0, 0.45, 'Rueda 1')
-    
+    crearEje(0, 0, 'Eje1')
+    crearEje(DISTANCIA_ENTRE_EJES, 0, 'Eje2')
     
     '''
     # Creación de un cubo y transformaciones de este:
