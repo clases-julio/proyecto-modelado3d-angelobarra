@@ -83,11 +83,38 @@ class Objeto:
     def crearCono(objName):
         bpy.ops.mesh.primitive_cone_add(radius1=0.5, location=(0, 0, 0))
         Activo.renombrar(objName)
+    
+    def crearCilindro(objName):
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.5, depth=1, location=(0, 0, 0))
+        Activo.renombrar(objName)
 
 '''************'''
 ''' M  A  I  N '''
 '''************'''
 if __name__ == "__main__":
+    borrarObjetos()
+    Objeto.crearCilindro('Eje')
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.escalar((0.15, 1, 0.15))
+    
+    Objeto.crearCilindro('CentroRueda')
+    Seleccionado.escalar((0.5, 0.5, 0.05))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, 0.45, 0))
+    
+    
+    Objeto.crearCilindro('PerimetroRueda')
+    Seleccionado.escalar((0.6, 0.6, 0.05))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, 0.50, 0))
+    
+    Objeto.crearCilindro('PerimetroRueda')
+    Seleccionado.escalar((0.6, 0.6, 0.05))
+    Seleccionado.rotarX(3.1415/2)
+    Seleccionado.mover((0, 0.40, 0))
+    
+    
+    '''
     # Creación de un cubo y transformaciones de este:
     Objeto.crearCubo('MiCubo')
     Seleccionado.mover((0, 1, 2))
@@ -107,4 +134,4 @@ if __name__ == "__main__":
     Especifico.posicionar('MiEsfera', (2, 0, 0))
     Activo.rotar((0, 0, 3.1415 / 3))
     Activo.escalar((1, 3, 1))
-
+    '''
