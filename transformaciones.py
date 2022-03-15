@@ -1,4 +1,5 @@
 import bpy
+import time
 
 '''*********************************************************************'''
 '''Funciones comunes útiles para selección/activación/borrado de objetos'''
@@ -86,15 +87,15 @@ class Especifico:
 '''************************'''
 class Objeto:
     def crearCubo(objName):
-        bpy.ops.mesh.primitive_cube_add(size=0.5, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_cube_add(size=1, location=(0, 0, 0))
         Activo.renombrar(objName)
 
     def crearEsfera(objName):
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.5, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=1, location=(0, 0, 0))
         Activo.renombrar(objName)
 
     def crearCono(objName):
-        bpy.ops.mesh.primitive_cone_add(radius1=0.5, location=(0, 0, 0))
+        bpy.ops.mesh.primitive_cone_add(radius1=1, location=(0, 0, 0))
         Activo.renombrar(objName)
     
     def crearCilindro(objName):
@@ -106,13 +107,11 @@ ANCHO_RUEDA = 0.05
 RADIO_INT_RUEDA = RADIO_EXT_RUEDA - ANCHO_RUEDA
 RADIO_EJE = 0.1
 LARGO_EJE = 2
-DISTANCIA_ENTRE_EJES = 2
+DISTANCIA_ENTRE_EJES = 3
 POS_EXT_RUEDA = LARGO_EJE / 2 + ANCHO_RUEDA
 
 def crearRueda(x, y, nombre, color):
-    
     r, g, b = color
-    
     
     Objeto.crearCilindro('PerimetroRueda1')
     Seleccionado.escalar((RADIO_EXT_RUEDA, RADIO_EXT_RUEDA, ANCHO_RUEDA))
@@ -138,20 +137,60 @@ def crearRueda(x, y, nombre, color):
     
     
 def crearEje(x, y, nombre):
-    Objeto.crearCilindro('Eje')
+    Objeto.crearCilindro('Barra')
     Seleccionado.rotarX(3.1415/2)
     Seleccionado.escalar((RADIO_EJE, LARGO_EJE, RADIO_EJE))
+    
+    Objeto.crearEsfera('Amort1')
+    Seleccionado.escalar((0.2, 0.2, 0.2))
+    Seleccionado.mover((0, -LARGO_EJE / 4, 0))
+    
+    
+    Objeto.crearEsfera('Amort2')
+    Seleccionado.escalar((0.2, 0.2, 0.2))
+    Seleccionado.mover((0, LARGO_EJE / 4, 0))
+    
+    seleccionarObjetos(['Barra', 'Amort1', 'Amort2'])
+    bpy.ops.object.join()
+
+    Activo.renombrar('Eje')
+    
     Seleccionado.cambiarColor(0, 10, 0)
+    
     crearRueda(0, POS_EXT_RUEDA, 'Rueda 1', (0, 0, 10))
     crearRueda(0, -POS_EXT_RUEDA, 'Rueda 2',  (0, 0, 10))
     
-    Objeto.crearEsfera('Centro')
-    Seleccionado.escalar((RADIO_EJE*4, RADIO_EJE*4, RADIO_EJE*4))
-    seleccionarObjetos(['Eje', 'Rueda 1', 'Rueda 2', 'Centro'])
+    
+    seleccionarObjetos(['Eje', 'Rueda 1', 'Rueda 2'])
+    
     bpy.ops.object.join()
     Activo.renombrar(nombre)
-    Activo.posicionar((x, y, 0))
     
+    Seleccionado.mover((x,y,0))
+    
+def crearChasis(x, y, z, nombre):
+    Objeto.crearCubo('Viga1')
+    Seleccionado.escalar((DISTANCIA_ENTRE_EJES * 1.5, 0.25, 0.25))
+    Seleccionado.mover((0, LARGO_EJE / 4, 0))
+    
+    Objeto.crearCubo('Viga2')
+    Seleccionado.escalar((DISTANCIA_ENTRE_EJES * 1.5, 0.25, 0.25))
+    Seleccionado.mover((0, -LARGO_EJE / 4, 0))
+    
+    Objeto.crearCubo('Viga3')
+    Seleccionado.escalar((0.25, ANCHO_RUEDA * 3 + LARGO_EJE, 0.25))
+    Seleccionado.mover((-DISTANCIA_ENTRE_EJES + DISTANCIA_ENTRE_EJES / 4, 0, 0))
+    
+    Objeto.crearCubo('Viga4')
+    Seleccionado.escalar((0.25, ANCHO_RUEDA * 3 + LARGO_EJE, 0.25))
+    Seleccionado.mover((DISTANCIA_ENTRE_EJES - DISTANCIA_ENTRE_EJES / 4, 0, 0))
+    
+    seleccionarObjetos(['Viga1', 'Viga2', 'Viga3', 'Viga4'])
+    bpy.ops.object.join()
+    Activo.renombrar(nombre)
+    
+    Seleccionado.mover((x, y, z))
+    Seleccionado.cambiarColor(20, 10, 0)
 '''************'''
 ''' M  A  I  N '''
 '''************'''
@@ -160,6 +199,8 @@ if __name__ == "__main__":
     borrarObjetosExcepto(['Camera', 'Light'])
     crearEje(0, 0, 'Eje1')
     crearEje(DISTANCIA_ENTRE_EJES, 0, 'Eje2')
+    
+    crearChasis(DISTANCIA_ENTRE_EJES / 2, 0, 0.25, 'Chasis')
     
     '''
     # Creación de un cubo y transformaciones de este:
