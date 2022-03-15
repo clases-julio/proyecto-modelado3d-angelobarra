@@ -23,3 +23,11 @@ Una vez tuve un eje con sus ruedas agregué otro eje para tener cuatro ruedas en
 </p align>
 
 Una vez tengo estas 4 ruedas tengo que decidir que les agregaré para tener un robot modelado que pueda resultar útil
+
+# Día 3:
+
+Decidí añadirle al robot una estructura compuesta de 4 vigas, siendo 2 vigas paralelas en perpendicular a los ejes y las restantes en paralelo a los ejes, que pueden ser últiles para colocar sensores o alguna placa como un arduino con baterías.
+
+<p align="center">
+<img src="./imagenes/render4.png" width="50%" height="50%">
+</p align>
