@@ -1,5 +1,5 @@
 import bpy
-import time
+import random
 
 '''*********************************************************************'''
 '''Funciones comunes útiles para selección/activación/borrado de objetos'''
@@ -191,6 +191,76 @@ def crearChasis(x, y, z, nombre):
     
     Seleccionado.mover((x, y, z))
     Seleccionado.cambiarColor(20, 10, 0)
+
+
+LARGO_LINK = 2.5
+LARGO_LINK_1 = LARGO_LINK * 2
+
+def crearBrazo(x, y, z, nombre):
+    Objeto.crearCubo('Base')
+    Seleccionado.escalar((LARGO_EJE / 2, LARGO_EJE / 2, 0.05))
+    
+    Objeto.crearEsfera('Joint0')
+    Seleccionado.escalar((0.2, 0.2, 0.2))
+    
+    Objeto.crearCubo('Link1')
+    Seleccionado.escalar((0.2, 0.2, LARGO_LINK_1 / 2))
+    Seleccionado.mover((0, 0, LARGO_LINK_1 / 4))
+    
+    Objeto.crearEsfera('Joint1')
+    Seleccionado.escalar((0.2, 0.2, 0.2))
+    Seleccionado.mover((0, 0, LARGO_LINK_1 / 2))
+    
+    Objeto.crearCubo('Link2')
+    Seleccionado.escalar((0.2, 0.2, LARGO_LINK / 2))
+    Activo.rotar((0, 3.1415/2, 0))
+    Seleccionado.mover((LARGO_LINK / 4, 0, LARGO_LINK_1 / 2))
+    
+    Objeto.crearEsfera('Joint2')
+    Seleccionado.escalar((0.2, 0.2, 0.2))
+    Seleccionado.mover((LARGO_LINK / 2, 0, LARGO_LINK_1 / 2))
+    
+    Objeto.crearCubo('Link4')
+    Seleccionado.escalar((0.3, 0.3, LARGO_LINK / 2))
+    Seleccionado.mover((LARGO_LINK / 2 + 0.2, 0, LARGO_LINK_1/ 2))
+    
+    Objeto.crearCubo('Link3')
+    Seleccionado.escalar((0.2, 0.2, LARGO_LINK / 2))
+    Seleccionado.mover((LARGO_LINK / 2 + 0.2, 0, LARGO_LINK_1/ 2 - LARGO_LINK / 4))
+    
+    Objeto.crearCono('Ventosa')
+    Seleccionado.escalar((0.1, 0.1, 0.1))
+    Seleccionado.mover((LARGO_LINK / 2 + 0.2, 0,  LARGO_LINK_1/ 2 - LARGO_LINK / 2))
+    
+    seleccionarObjetos(['Base','Joint0', 'Link1', 'Joint1', 'Link2', 'Joint2', 'Link3', 'Link4', 'Ventosa'])
+    bpy.ops.object.join()
+    Activo.renombrar(nombre)
+    
+    Seleccionado.mover((x, y, z))
+
+def objetosDecorar(x, y, z, nombre):
+    Objeto.crearCubo('Base')
+    Seleccionado.escalar((LARGO_EJE / 2, LARGO_EJE / 2, 0.05))
+    Seleccionado.cambiarColor(0, 0, random.randint(0, 20))
+    
+    for i in range (10):
+        Objeto.crearCubo('Objeto')
+        Seleccionado.escalar((0.1, 0.1, 0.1))
+        a = round(random.uniform(-LARGO_EJE / 8, LARGO_EJE / 8), 2)
+        b = round(random.uniform(-LARGO_EJE / 8, LARGO_EJE / 8), 2)
+        
+        if (i % 2 == 0):
+            Seleccionado.cambiarColor(0, random.randint(0, 20), 0)
+        else:
+            Seleccionado.cambiarColor(random.randint(0, 20), 0, 0)
+        Seleccionado.mover((a, b, 0.1))
+        seleccionarObjetos(['Base', 'Objeto'])
+        bpy.ops.object.join()
+        Activo.renombrar('Base')
+    
+    Seleccionado.mover((x, y, z))
+    Activo.renombrar(nombre)
+
 '''************'''
 ''' M  A  I  N '''
 '''************'''
@@ -201,7 +271,9 @@ if __name__ == "__main__":
     crearEje(DISTANCIA_ENTRE_EJES, 0, 'Eje2')
     
     crearChasis(DISTANCIA_ENTRE_EJES / 2, 0, 0.25, 'Chasis')
+    crearBrazo( DISTANCIA_ENTRE_EJES / 4, 0, 0.40, 'hola')
     
+    objetosDecorar(3 * DISTANCIA_ENTRE_EJES / 4, 0, 0.40, 'Bandeja')
     '''
     # Creación de un cubo y transformaciones de este:
     Objeto.crearCubo('MiCubo')
