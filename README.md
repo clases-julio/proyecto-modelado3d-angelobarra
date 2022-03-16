@@ -31,3 +31,25 @@ Decidí añadirle al robot una estructura compuesta de 4 vigas, siendo 2 vigas p
 <p align="center">
 <img src="./imagenes/render4.png" width="50%" height="50%">
 </p align>
+
+# Día 4:
+
+Por un escenario que se comento en otra asignatura, en la que un robot cogía bolas de una habitación y la llevaba a otra, decidí agregarle al modelo un brazo robótico con una ventosa para que fuese capaz de coger bloques y ponerlos en una zona específica del robot o viceversa. 
+
+Para ello, use 3 esferas que hacen de joints y 4 cubos que hacen de links, de los cuales el último es prismático.
+
+<p align="center">
+<img src="./imagenes/render5.png" width="50%" height="50%">
+</p align>
+
+También agregue una bandeja con unos cubos que el robot podría coger y ponerlos en el suelo.
+
+<p align="center">
+<img src="./imagenes/render6.png" width="50%" height="50%">
+</p align>
+
+El último paso fue agregarle texturas al brazo obteniendo el siguiente resultado final.
+
+<p align="center">
+<img src="./imagenes/render7.png" width="50%" height="50%">
+</p align>
